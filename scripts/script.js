@@ -5,7 +5,7 @@ const goods = [
     { title: 'Shoes', price: 4500, img: 'images/shoes.jpg' },
 ];
 
-// const renderGoodsItem = (product) => {
+// const renderGoodsItem = product => {
 //     return `<div class="goods-item">
 //     <img class="images" src="${product.img}">
 //     <h3>${product.title}</h3>
@@ -13,7 +13,7 @@ const goods = [
 //     <button class="buy-button">Купить</button></div>`;
 // };
 
-// const renderGoodsList = (list) => {
+// const renderGoodsList = list => {
 //     let goodsList = list.map(item => renderGoodsItem(item)).join('');
 //     document.querySelector('.goods-list').innerHTML = goodsList;
 // }
@@ -28,7 +28,7 @@ const renderGoodsItem = (title = 'default', price = 0, img) => {
     <button class="buy-button">Купить</button></div>`;
 };
 
-const renderGoodsList = (list) => {
+const renderGoodsList = list => {
     let goodsList = list.map(item => renderGoodsItem(item.title, item.price, item.img));
     document.querySelector('.goods-list').innerHTML = goodsList.join('');
 }
