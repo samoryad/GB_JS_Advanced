@@ -11,7 +11,7 @@ body {
 
 header{
     background-color: #340144;
-    margin-bottom: 32px;
+    margin: 0 0 0 32px;
     display: flex;
     justify-content: flex-end;
     padding-top: 22px;
@@ -19,7 +19,6 @@ header{
   }
 
   .container{
-    max-width: 1600px;
     margin: 0 auto;
 }
 
@@ -32,14 +31,13 @@ header{
     color: #130101;
     margin-right: 22px;
     text-decoration: none;
-    display: inline-block;
+    border-radius: 5px;
+    width: 100px;
 }
 
 .head_name{
     color: #340144;
-    margin-left: 3%;
-    margin-top: 22px;
-    margin-bottom: 22px;
+    margin: 22px 0 22px 22px;
 }
 
 .goods-list{
@@ -60,12 +58,14 @@ header{
     width: 25%;
     display: block;
     margin: 0 auto;
+    margin-top: 5px;
 }
 
 .images{
     width: 200px;
     height: 200px;
     margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .goods-item {
