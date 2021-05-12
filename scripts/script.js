@@ -1,8 +1,8 @@
 const goods = [
-    { title: 'Shirt', price: 150, img: 'images/shirt.jpg' },
-    { title: 'Hat', price: 50, img: 'images/hat.jpg' },
-    { title: 'Jacket', price: 350, img: 'images/jacket.jpg' },
-    { title: 'Shoes', price: 250, img: 'images/shoes.jpg' },
+    { title: 'Shirt', price: 1000, img: 'images/shirt.jpg' },
+    { title: 'Hat', price: 500, img: 'images/hat.jpg' },
+    { title: 'Jacket', price: 3500, img: 'images/jacket.jpg' },
+    { title: 'Shoes', price: 4500, img: 'images/shoes.jpg' },
 ];
 
 const renderGoodsItem = (product) => {
@@ -10,7 +10,7 @@ const renderGoodsItem = (product) => {
     <img class="images" src="${product.img}">
     <h3>${product.title}</h3>
     <p>${product.price}</p>
-    <button class="buy-btn">Купить</button></div>`;
+    <button class="buy-button">Купить</button></div>`;
 };
 
 const renderGoodsList = (list) => {

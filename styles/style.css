@@ -28,11 +28,12 @@ header{
     line-height: 26px;
     text-align: center;
     letter-spacing: 0.04em;
-    color: #130101;
+    color: #340144;
     margin-right: 22px;
     text-decoration: none;
     border-radius: 5px;
     width: 100px;
+    display: inline-block;
 }
 
 .head_name{
@@ -45,9 +46,9 @@ header{
     justify-content: space-around;
 }
 
-.buy-btn{
+.buy-button{
     background: #340144;
-    box-shadow: 5px 20px 50px rgb(16 112 177 / 20%);
+    box-shadow: 5px 20px 50px rgba(141, 0, 193, 0.2);
     border-radius: 10px;
     font-weight: 500;
     font-size: 16px;
