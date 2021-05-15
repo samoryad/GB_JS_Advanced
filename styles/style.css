@@ -8,6 +8,18 @@ body {
     width: 100%;
   }
 
+.goods_sum {
+    font-family: sans-serif;
+    color: #340144;
+    width: 100%;
+    font-weight: 500;
+    font-size: 16px;
+    width: 80%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 82%;
+  }
+
 
 header{
     background-color: #340144;
