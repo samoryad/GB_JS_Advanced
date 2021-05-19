@@ -1,14 +1,35 @@
+const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
+
+const makeGETRequest = (url, callback) => {
+    let xhr;
+
+    if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            callback(xhr.responseText);
+        }
+    }
+
+    xhr.open('GET', url, true);
+    xhr.send();
+}
+
 class GoodsItem {
-    constructor(title, price, img) {
-        this.title = title;
+    constructor(product_name, price, img = 'https://placehold.it/200x150') {
+        this.product_name = product_name;
         this.price = price;
         this.img = img
     }
 
-    render(title = 'default', price = 0, img = 'image') {
+    render(product_name = 'default', price = 0, img = 'image') {
         return `<div class="goods-item">
-        <img class="images" src="${this.img}">
-        <h3>${this.title}</h3>
+        <img class="images" src="${this.img}" alt="some image">
+        <h3>${this.product_name}</h3>
         <p>${this.price}</p>
         <button class="buy-button">Купить</button></div>`;
     }
@@ -19,48 +40,62 @@ class GoodsList {
         this.goods = []
     }
 
-    fetchGoods() {
-        this.goods = [
-            { title: 'Shirt', price: 1000, img: 'images/shirt.jpg' },
-            { title: 'Hat', price: 500, img: 'images/hat.jpg' },
-            { title: 'Jacket', price: 3500, img: 'images/jacket.jpg' },
-            { title: 'Shoes', price: 4500, img: 'images/shoes.jpg' },
-        ];
-
+    fetchGoods(cb) {
+        makeGETRequest(`${API_URL}/catalogData.json`, (goods) => {
+            this.goods = JSON.parse(goods);
+            cb();
+        })
     }
 
     render() {
         let listHtml = '';
         this.goods.forEach(good => {
-            const goodItem = new GoodsItem(good.title, good.price, good.img);
+            const goodItem = new GoodsItem(good.product_name, good.price, good.img);
             listHtml += goodItem.render();
         });
         document.querySelector('.goods-list').innerHTML = listHtml;
-        const cart = document.querySelector('.header')
-        cart.insertAdjacentHTML('afterend', `<div class=" goods_sum"> Сумма всех товаров равна: ${this.sumAllGoods()}</div>`)
     }
 
-    sumAllGoods() {
-        let sum = 0;
-        for (let good of this.goods) {
-            sum += good.price
-        }
-        return sum
+    getTotalSum() {
+        const totalSum = this.goods.reduce((acc, item) => {
+            if (!item.price) return acc;
+            return acc += item.price;
+        }, 0);
+        console.log(totalSum);
     }
 
 }
 
-class Basket {
-    addGood() {
+const list = new GoodsList();
+list.fetchGoods(() => {
+    list.render();
+});
+
+
+class Basket extends GoodsList {
+    constructor(...args) {
+        super(...args);
+    }
+
+    clearAll() {
 
     }
 
-    removeGood() {
+    addItem() {
+
+    }
+
+    removeItem() {
 
     }
 }
 
-class BasketElem {
+class BasketElem extends GoodsItem {
+    constructor(...args) {
+        super(...args);
+        this.count = 0;
+    }
+
     addToOrder() {
 
     }
@@ -73,7 +108,3 @@ class BasketElem {
 
     }
 }
-
-const list = new GoodsList();
-list.fetchGoods();
-list.render();
