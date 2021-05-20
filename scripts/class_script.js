@@ -1,34 +1,37 @@
 const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
 
-const makeGETRequest = (url, callback) => {
-    let xhr;
+// const makeGETRequest = (url, callback) => {
+//     let xhr;
 
-    if (window.XMLHttpRequest) {
-        xhr = new XMLHttpRequest();
-    } else if (window.ActiveXObject) {
-        xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    }
+//     if (window.XMLHttpRequest) {
+//         xhr = new XMLHttpRequest();
+//     } else if (window.ActiveXObject) {
+//         xhr = new ActiveXObject("Microsoft.XMLHTTP");
+//     }
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            callback(xhr.responseText);
-        }
-    }
+//     xhr.onreadystatechange = function () {
+//         if (xhr.readyState === 4) {
+//             callback(xhr.responseText);
+//         }
+//     }
 
-    xhr.open('GET', url, true);
-    xhr.send();
-}
+//     xhr.open('GET', url, true);
+//     xhr.send();
+// }
 
 class GoodsItem {
-    constructor(product_name, price, img = 'https://placehold.it/200x150') {
+    constructor(id_product, product_name, price, img = 'https://placehold.it/200x150') {
+        this.id_product = id_product
         this.product_name = product_name;
         this.price = price;
-        this.img = img
+        this.img = img;
+
     }
 
-    render(product_name = 'default', price = 0, img = 'image') {
+    render(id_product = 1, product_name = 'default', price = 0, img = 'image') {
         return `<div class="goods-item">
         <img class="images" src="${this.img}" alt="some image">
+        <p>${this.id_product}</p>
         <h3>${this.product_name}</h3>
         <p>${this.price}</p>
         <button class="buy-button">Купить</button></div>`;
@@ -37,23 +40,44 @@ class GoodsItem {
 
 class GoodsList {
     constructor() {
-        this.goods = []
+        this.goods = [];
     }
 
-    fetchGoods(cb) {
-        makeGETRequest(`${API_URL}/catalogData.json`, (goods) => {
-            this.goods = JSON.parse(goods);
-            cb();
-        })
+    // fetchGoods(cb) {
+    //     makeGETRequest(`${API_URL}/catalogData.json`, (goods) => {
+    //         this.goods = JSON.parse(goods);
+    //         cb();
+    //     })
+    // }
+
+    fetchGoods() {
+        return fetch(`${API_URL}/catalogData.json`)
+            .then(response => response.json())
+            .catch(err => {
+                console.log(err);
+            })
     }
+
+    // render() {
+    //     let listHtml = '';
+    //     this.goods.forEach(good => {
+    //         const goodItem = new GoodsItem(good.product_name, good.price, good.img);
+    //         listHtml += goodItem.render();
+    //     });
+    //     document.querySelector('.goods-list').innerHTML = listHtml;
+    // }
 
     render() {
-        let listHtml = '';
-        this.goods.forEach(good => {
-            const goodItem = new GoodsItem(good.product_name, good.price, good.img);
-            listHtml += goodItem.render();
-        });
-        document.querySelector('.goods-list').innerHTML = listHtml;
+        this.fetchGoods()
+            .then(data => {
+                let listHtml = '';
+                this.goods = [...data]
+                this.goods.forEach(good => {
+                    const goodItem = new GoodsItem(good.id_product, good.product_name, good.price, good.img);
+                    listHtml += goodItem.render();
+                });
+                document.querySelector('.goods-list').innerHTML = listHtml;
+            });
     }
 
     getTotalSum() {
@@ -64,13 +88,8 @@ class GoodsList {
         console.log(totalSum);
     }
 
+
 }
-
-const list = new GoodsList();
-list.fetchGoods(() => {
-    list.render();
-});
-
 
 class Basket extends GoodsList {
     constructor(...args) {
@@ -81,7 +100,7 @@ class Basket extends GoodsList {
 
     }
 
-    addItem() {
+    addItem(event) {
 
     }
 
@@ -108,3 +127,6 @@ class BasketElem extends GoodsItem {
 
     }
 }
+
+const list = new GoodsList();
+list.render();
