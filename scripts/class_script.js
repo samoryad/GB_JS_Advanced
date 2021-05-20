@@ -1,24 +1,5 @@
 const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
 
-// const makeGETRequest = (url, callback) => {
-//     let xhr;
-
-//     if (window.XMLHttpRequest) {
-//         xhr = new XMLHttpRequest();
-//     } else if (window.ActiveXObject) {
-//         xhr = new ActiveXObject("Microsoft.XMLHTTP");
-//     }
-
-//     xhr.onreadystatechange = function () {
-//         if (xhr.readyState === 4) {
-//             callback(xhr.responseText);
-//         }
-//     }
-
-//     xhr.open('GET', url, true);
-//     xhr.send();
-// }
-
 class GoodsItem {
     constructor(id_product, product_name, price, img = 'https://placehold.it/200x150') {
         this.id_product = id_product
@@ -31,7 +12,7 @@ class GoodsItem {
     render(id_product = 1, product_name = 'default', price = 0, img = 'image') {
         return `<div class="goods-item">
         <img class="images" src="${this.img}" alt="some image">
-        <p>${this.id_product}</p>
+        <p>id - ${this.id_product}</p>
         <h3>${this.product_name}</h3>
         <p>${this.price}</p>
         <button class="buy-button">Купить</button></div>`;
@@ -39,16 +20,10 @@ class GoodsItem {
 }
 
 class GoodsList {
-    constructor() {
+    constructor(container = '.container') {
         this.goods = [];
+        this.container = container
     }
-
-    // fetchGoods(cb) {
-    //     makeGETRequest(`${API_URL}/catalogData.json`, (goods) => {
-    //         this.goods = JSON.parse(goods);
-    //         cb();
-    //     })
-    // }
 
     fetchGoods() {
         return fetch(`${API_URL}/catalogData.json`)
@@ -57,15 +32,6 @@ class GoodsList {
                 console.log(err);
             })
     }
-
-    // render() {
-    //     let listHtml = '';
-    //     this.goods.forEach(good => {
-    //         const goodItem = new GoodsItem(good.product_name, good.price, good.img);
-    //         listHtml += goodItem.render();
-    //     });
-    //     document.querySelector('.goods-list').innerHTML = listHtml;
-    // }
 
     render() {
         this.fetchGoods()
@@ -92,20 +58,54 @@ class GoodsList {
 }
 
 class Basket extends GoodsList {
-    constructor(...args) {
-        super(...args);
+    constructor(container = '.basket') {
+        super(container);
+        this.fetchGoods()
+            .then(data => {
+                this.goods = [...data.contents];
+                this.render()
+            });
     }
 
-    clearAll() {
-
+    fetchGoods() {
+        return fetch(`${API_URL}/getBasket.json`)
+            .then(response => response.json())
+            .catch(error => {
+                console.log(error);
+            })
     }
 
-    addItem(event) {
+    render() {
+        const block = document.querySelector(this.container);
+        block.innerHTML = ''
 
+        this.goods.forEach(good => {
+            const goodItem = new BasketElem(good.id_product, good.product_name, good.price, good.img);
+            block.insertAdjacentHTML('beforeend', goodItem.render());
+        });
+    }
+
+
+    addItem() {
+        fetch(`${API_URL}/addToBasket.json`)
+            .then(response => {
+                response.json();
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            })
     }
 
     removeItem() {
-
+        fetch(`${API_URL}/deleteFromBasket.json`)
+            .then(response => {
+                response.json();
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            })
     }
 }
 
@@ -115,18 +115,22 @@ class BasketElem extends GoodsItem {
         this.count = 0;
     }
 
-    addToOrder() {
-
+    render() {
+        return `<div class="goods-item basket_item" data-id="${this.id_product}">
+                <img src="${this.img}" alt="Some img">
+                <div class="desc">
+                    <h3>${this.product_name}</h3>
+                    <p>${this.price} $</p>
+                </div>
+            </div>`
     }
 
-    removeFromOrder() {
-
-    }
-
-    createOrder() {
-
-    }
 }
 
 const list = new GoodsList();
 list.render();
+
+let basket = new Basket();
+basket.render();
+basket.addItem();
+basket.removeItem();
