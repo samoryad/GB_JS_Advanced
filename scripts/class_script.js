@@ -88,10 +88,8 @@ class Basket extends GoodsList {
 
     addItem() {
         fetch(`${API_URL}/addToBasket.json`)
-            .then(response => {
-                response.json();
-                console.log(response);
-            })
+            .then(response => response.json())
+            .then(data => console.log(data))
             .catch(error => {
                 console.log(error);
             })
@@ -99,10 +97,8 @@ class Basket extends GoodsList {
 
     removeItem() {
         fetch(`${API_URL}/deleteFromBasket.json`)
-            .then(response => {
-                response.json();
-                console.log(response);
-            })
+            .then(response => response.json())
+            .then(data => console.log(data))
             .catch(error => {
                 console.log(error);
             })
