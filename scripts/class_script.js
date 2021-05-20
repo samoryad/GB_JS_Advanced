@@ -1,79 +1,132 @@
+const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
+
 class GoodsItem {
-    constructor(title, price, img) {
-        this.title = title;
+    constructor(id_product, product_name, price, img = 'https://placehold.it/200x150') {
+        this.id_product = id_product
+        this.product_name = product_name;
         this.price = price;
-        this.img = img
+        this.img = img;
+
     }
 
-    render(title = 'default', price = 0, img = 'image') {
+    render(id_product = 1, product_name = 'default', price = 0, img = 'image') {
         return `<div class="goods-item">
-        <img class="images" src="${this.img}">
-        <h3>${this.title}</h3>
+        <img class="images" src="${this.img}" alt="some image">
+        <p>id - ${this.id_product}</p>
+        <h3>${this.product_name}</h3>
         <p>${this.price}</p>
         <button class="buy-button">Купить</button></div>`;
     }
 }
 
 class GoodsList {
-    constructor() {
-        this.goods = []
+    constructor(container = '.container') {
+        this.goods = [];
+        this.container = container
     }
 
     fetchGoods() {
-        this.goods = [
-            { title: 'Shirt', price: 1000, img: 'images/shirt.jpg' },
-            { title: 'Hat', price: 500, img: 'images/hat.jpg' },
-            { title: 'Jacket', price: 3500, img: 'images/jacket.jpg' },
-            { title: 'Shoes', price: 4500, img: 'images/shoes.jpg' },
-        ];
-
+        return fetch(`${API_URL}/catalogData.json`)
+            .then(response => response.json())
+            .catch(err => {
+                console.log(err);
+            })
     }
 
     render() {
-        let listHtml = '';
+        this.fetchGoods()
+            .then(data => {
+                let listHtml = '';
+                this.goods = [...data]
+                this.goods.forEach(good => {
+                    const goodItem = new GoodsItem(good.id_product, good.product_name, good.price, good.img);
+                    listHtml += goodItem.render();
+                });
+                document.querySelector('.goods-list').innerHTML = listHtml;
+            });
+    }
+
+    getTotalSum() {
+        const totalSum = this.goods.reduce((acc, item) => {
+            if (!item.price) return acc;
+            return acc += item.price;
+        }, 0);
+        console.log(totalSum);
+    }
+
+
+}
+
+class Basket extends GoodsList {
+    constructor(container = '.basket') {
+        super(container);
+        this.fetchGoods()
+            .then(data => {
+                this.goods = [...data.contents];
+                this.render()
+            });
+    }
+
+    fetchGoods() {
+        return fetch(`${API_URL}/getBasket.json`)
+            .then(response => response.json())
+            .catch(error => {
+                console.log(error);
+            })
+    }
+
+    render() {
+        const block = document.querySelector(this.container);
+        block.innerHTML = ''
+
         this.goods.forEach(good => {
-            const goodItem = new GoodsItem(good.title, good.price, good.img);
-            listHtml += goodItem.render();
+            const goodItem = new BasketElem(good.id_product, good.product_name, good.price, good.img);
+            block.insertAdjacentHTML('beforeend', goodItem.render());
         });
-        document.querySelector('.goods-list').innerHTML = listHtml;
-        const cart = document.querySelector('.header')
-        cart.insertAdjacentHTML('afterend', `<div class=" goods_sum"> Сумма всех товаров равна: ${this.sumAllGoods()}</div>`)
     }
 
-    sumAllGoods() {
-        let sum = 0;
-        for (let good of this.goods) {
-            sum += good.price
-        }
-        return sum
+
+    addItem() {
+        fetch(`${API_URL}/addToBasket.json`)
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => {
+                console.log(error);
+            })
     }
 
-}
-
-class Basket {
-    addGood() {
-
-    }
-
-    removeGood() {
-
+    removeItem() {
+        fetch(`${API_URL}/deleteFromBasket.json`)
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => {
+                console.log(error);
+            })
     }
 }
 
-class BasketElem {
-    addToOrder() {
-
+class BasketElem extends GoodsItem {
+    constructor(...args) {
+        super(...args);
+        this.count = 0;
     }
 
-    removeFromOrder() {
-
+    render() {
+        return `<div class="goods-item basket_item" data-id="${this.id_product}">
+                <img src="${this.img}" alt="Some img">
+                <div class="desc">
+                    <h3>${this.product_name}</h3>
+                    <p>${this.price} $</p>
+                </div>
+            </div>`
     }
 
-    createOrder() {
-
-    }
 }
 
 const list = new GoodsList();
-list.fetchGoods();
 list.render();
+
+let basket = new Basket();
+basket.render();
+basket.addItem();
+basket.removeItem();

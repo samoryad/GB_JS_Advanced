@@ -11,10 +11,21 @@
 
 <body>
     <header class="container header">
-        <button class="container header cart-button" type="button">Корзина</button>
+        <button class="container header cart-button" type="button"
+            onclick="window.location.href = '#openModal';">Корзина</button>
     </header>
     <main class="container">
         <div class="goods-list"></div>
+
+        <div id="openModal" class="modalDialog">
+            <div>
+                <a href="#close" title="Закрыть" class="close">X</a>
+                <h2>Корзина</h2>
+                <div class="basket"></div>
+            </div>
+
+        </div>
+
     </main>
 </body>
 
