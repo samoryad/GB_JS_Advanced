@@ -45,6 +45,7 @@ class GoodsItem {
 class GoodsList {
     constructor() {
         this.goods = [];
+        this.filteredGoods = [];
     }
 
     // fetchGoods() {
@@ -55,11 +56,26 @@ class GoodsList {
     //         })
     // }
 
+    // fetchGoods(cb) {
+    //     makeGETRequest(`${API_URL}/catalogData.json`, (goods) => {
+    //       this.goods = JSON.parse(goods);
+    //       this.filteredGoods = JSON.parse(goods);
+    //       cb();
+    //     })
+    //   }
+
+    filterGoods(value) {
+        const regexp = new RegExp(value, 'i');
+        this.filteredGoods = this.goods.filter(good => regexp.test(good.product_name));
+        this.render();
+    }
+
     fetchGoods() {
         return new Promise(resolve => {
             makeGETRequest(`${API_URL}/catalogData.json`)
                 .then((goods) => {
                     this.goods = JSON.parse(goods);
+                    this.filteredGoods = JSON.parse(goods);
                     resolve();
                 }).catch((error) => {
                     console.log(`Error: ${error}`);
@@ -80,11 +96,12 @@ class GoodsList {
 
     render() {
         let html = '';
-        this.goods.forEach(good => {
+        this.filteredGoods.forEach(good => {
             let goodItem = new GoodsItem(good.id_product, good.product_name, good.price, good.img);
             html += goodItem.render();
         });
         document.querySelector('.goods-list').innerHTML = html;
+        this._basket.setAddListeners(this.filteredGoods);
     }
 
     // render() {
@@ -275,3 +292,14 @@ document.querySelector('.basket')
     .addEventListener('click', event => {
         basket.removeHandler(event);
     });
+
+const searchButton = document.querySelector('.search-button')
+const searchInput = document.querySelector('.goods-search')
+searchButton.addEventListener('click', (e) => {
+    const value = searchInput.value;
+    list.filterGoods(value);
+});
+searchInput.addEventListener('keydown', (e) => {
+    const value = searchInput.value;
+    list.filterGoods(value);
+});
