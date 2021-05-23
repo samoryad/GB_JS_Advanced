@@ -179,3 +179,7 @@ main {
     min-height: calc(100vh - 40px);
     padding: 30px calc(50% - 1100px / 2);
 }
+
+.goods-search {
+    margin-left: 20px;
+}

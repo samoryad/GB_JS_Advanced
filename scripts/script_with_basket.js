@@ -25,7 +25,7 @@ const makeGETRequest = (url) => {
 }
 
 class GoodsItem {
-    constructor(id_product, product_name = 'some_product', price = 0, img = 'https://placehold.it/200x150') {
+    constructor(id_product = 1, product_name = 'some_product', price = 0, img = 'https://placehold.it/200x150') {
         this.id_product = id_product
         this.product_name = product_name;
         this.price = price;
@@ -33,7 +33,7 @@ class GoodsItem {
 
     }
 
-    render(id_product = 1, product_name = 'default', price = 0, img = 'image') {
+    render() {
         return `<div class="goods-item">
         <img class="images" src="${this.img}" alt="some image">
         <h3>${this.product_name}</h3>
@@ -101,7 +101,6 @@ class GoodsList {
             html += goodItem.render();
         });
         document.querySelector('.goods-list').innerHTML = html;
-        this._basket.setAddListeners(this.filteredGoods);
     }
 
     // render() {
@@ -207,7 +206,6 @@ class Basket extends GoodsList {
         }
     }
 
-    // Решение 2-го задания
     removeFromCart(item) {
         for (let idx = 0; idx < this.goods.length; idx++) {
             if (this.goods[idx].product_name === item.product_name) {
