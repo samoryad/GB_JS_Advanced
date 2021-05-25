@@ -5,28 +5,35 @@
     <p class="container head_name">JS_Shop</p>
     <title>JS_Shop</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="styles/style.css">
-    <script defer src="scripts/class_script.js"></script>
+    <link rel="stylesheet" href="styles/styles_basket.css">
+    <script defer src="scripts/script_with_basket.js"></script>
 </head>
 
 <body>
     <header class="container header">
+        <input type="text" class="goods-search" />
+        <button class="search-button" type="button">Искать</button>
+
         <button class="container header cart-button" type="button"
             onclick="window.location.href = '#openModal';">Корзина</button>
     </header>
     <main class="container">
         <div class="goods-list"></div>
+        <div class="basket"></div>
 
-        <div id="openModal" class="modalDialog">
+        <!-- старая версия с модальным окном, нужно переподключить стили и скрипт-->
+        <!-- <div id="openModal" class="modalDialog">
             <div>
                 <a href="#close" title="Закрыть" class="close">X</a>
                 <h2>Корзина</h2>
                 <div class="basket"></div>
             </div>
-
-        </div>
+        </div> -->
 
     </main>
+    <footer class='container footer'>
+        <span class="span-footer">Интернет-магазин</span>
+    </footer>
 </body>
 
 </html>

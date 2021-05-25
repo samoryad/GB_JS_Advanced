@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <h1>ДЗ №4</h1>
+    <p>Замена одинарных кавычек на двойные
+        <br>
+        (Улучшить шаблон так, чтобы в конструкциях типа aren't одинарная кавычка не
+        заменялась на двойную).
+    </p>
+    <textarea id="text-field" cols="80" rows="10">
+    'There was a storm last night,' Paul said.
+    Peter, however, didn't believe him. 'I'm not sure that's exactly what happened.'
+    Peter was aware of what he called 'Paul's weakness triangle': he was half deaf, slept like a log, and was prone to lying.
+    Paul saw an argument coming, so he muttered only 'But I saw it'; this was going to be a long night and he didn't want to start it with a fight.
+    Question marks and exclamation points have their own rules.
+    If they apply to the quoted material, they go within the quotation marks.If they apply to the whole sentence, they go outside it:
+    Sandy asked them, 'Why do you guys always fight?'
+    Did the dog bark every time he heard Sandy say 'I'm bringing dinner'?
+    </textarea>
+    <br>
+    <button id="text-field-btn">Заменить кавычки</button>
+    <hr>
+    <script>
+        document.querySelector('#text-field-btn').addEventListener('click', () => {
+            let area = document.querySelector('#text-field');
+            let content = area.value;
+            content = content.replaceAll(/\B'|'\B/g, '"');
+            area.value = content;
+        })
+    </script>
+</body>
+
+</html>
