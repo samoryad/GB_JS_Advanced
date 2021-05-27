@@ -1,8 +1,10 @@
 <template>
   <div id="app">
     <header class="container header">
-      <input type="text" class="goods-search" />
-      <button class="search-button" type="button">Искать</button>
+      <input v-model="searchLine" type="text" class="goods-search" />
+      <button class="search-button" type="button" @click="filterGoods">
+        Искать
+      </button>
       <button
         class="container header cart-button"
         type="button"
@@ -12,6 +14,7 @@
       </button>
     </header>
     <main class="container">
+      <h2>Каталог</h2>
       <div class="goods-list">
         <div
           v-for="item in filteredGoods"
@@ -21,10 +24,39 @@
           <img class="images" alt="some image" />
           <h3>{{ item.product_name }}</h3>
           <p>{{ item.price }}</p>
-          <button class="buy-button">Купить</button>
+          <button
+            class="buy-button"
+            :data-good-id="item.product_name"
+            @click="addItemToCart"
+          >
+            Купить
+          </button>
         </div>
       </div>
-      <div class="basket"></div>
+
+      <h2>Корзина</h2>
+      <div class="basket">
+        <div
+          class="container basket_item"
+          v-for="item in basket"
+          :key="item.id_product"
+        >
+          <img src="" alt="Some img" />
+          <div class="basket-item-desc">
+            <h3>{{ item.product_name }}</h3>
+            <p>Количество: {{ item.quantity }}</p>
+            <p>{{ item.price }}</p>
+            <p>Общая стоимость: {{ getTotalPrice() }}</p>
+            <button
+              class="buy-button"
+              :data-good-id="item.product_name"
+              @click="removeHandler"
+            >
+              Удалить
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
     <footer class="container footer">
       <span class="span-footer">Интернет-магазин</span>
@@ -40,6 +72,8 @@ export default {
   data: () => ({
     goods: [],
     filteredGoods: [],
+    basket: [],
+    searchLine: "",
   }),
 
   mounted() {
@@ -54,6 +88,88 @@ export default {
           this.goods = data;
           this.filteredGoods = data;
         });
+    },
+
+    filterGoods() {
+      const regexp = new RegExp(this.searchLine, "i");
+      console.log(this.goods);
+      this.filteredGoods = this.goods.filter((good) =>
+        regexp.test(good.product_name)
+      );
+    },
+
+    pushToCart(item) {
+      console.log(item);
+      this.basket.push({
+        product_name: item.product_name,
+        price: item.price,
+        quantity: 1,
+      });
+    },
+
+    addItemToCart(item) {
+      // TODO не могу понять, как найти product_name (почему-то не работает data-good-id, может синтаксис не тот...)
+      console.log(item);
+      console.log(item.product_name);
+      console.log(item.srcElement.dataset.goodId);
+      // if (item.product_name === item.srcElement.dataset.goodId) {
+      let inCart = false;
+      if (this.basket.length) {
+        this.basket.forEach((basket) => {
+          if (this.isInCart(item, basket)) {
+            this.increaseQuantity(basket);
+            inCart = true;
+          }
+        });
+      } else {
+        this.pushToCart(item);
+        return;
+      }
+      if (!inCart) {
+        this.pushToCart(item);
+      }
+      // }
+    },
+
+    isInCart(unknownItem, cartItem) {
+      return unknownItem.product_name === cartItem.product_name;
+    },
+
+    increaseQuantity(item) {
+      item.quantity++;
+    },
+
+    getTotalPrice() {
+      return this.quantity * this.price;
+    },
+
+    removeHandler(event) {
+      if (event.target.tagName === "BUTTON") {
+        this.basket.forEach((basket) => {
+          if (event.target.dataset.goodId === basket.product_name) {
+            this.removeFromCart(basket);
+          }
+        });
+      }
+    },
+
+    removeFromCart(item) {
+      for (let idx = 0; idx < this.basket.length; idx++) {
+        if (this.basket[idx].product_name === item.product_name) {
+          if (this.basket[idx].quantity > 1) this.basket[idx].quantity--;
+          else this.basket.splice(idx, 1);
+        }
+      }
+      this.render();
+    },
+  },
+
+  watch: {
+    searchLine() {
+      const regexp = new RegExp(this.searchLine, "i");
+      this.filteredGoods = this.goods.filter((good) =>
+        regexp.test(good.product_name)
+      );
     },
   },
 };
