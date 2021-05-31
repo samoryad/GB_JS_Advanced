@@ -6,28 +6,7 @@
       <h2>Каталог</h2>
       <GoodsList :goods="filteredGoods" :addItemToCart="addItemToCart" />
       <h2>Корзина</h2>
-      <div class="basket">
-        <div
-          class="container basket_item"
-          v-for="item in basket"
-          :key="item.id_product"
-        >
-          <img src="" alt="Some img" />
-          <div class="basket-item-desc">
-            <h3>{{ item.product_name }}</h3>
-            <p>Количество: {{ item.quantity }}</p>
-            <p>{{ item.price }}</p>
-            <p>Общая стоимость: {{ item.price * item.quantity }}</p>
-            <button
-              class="buy-button"
-              :data-good-id="item.product_name"
-              @click="removeHandler()"
-            >
-              Удалить
-            </button>
-          </div>
-        </div>
-      </div>
+      <BasketList :basket="basket" />
     </main>
     <footer class="container footer">
       <span class="span-footer">Интернет-магазин</span>
@@ -38,6 +17,7 @@
 <script>
 import GoodsList from "./components/GoodsList";
 import Header from "./components/Header";
+import BasketList from "./components/BasketList";
 
 const API_URL =
   "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
@@ -46,6 +26,7 @@ export default {
   components: {
     GoodsList,
     Header,
+    BasketList,
   },
 
   data: () => ({
@@ -71,7 +52,6 @@ export default {
 
     filterGoods(value) {
       const regexp = new RegExp(value, "i");
-      console.log(this.goods);
       this.filteredGoods = this.goods.filter((good) =>
         regexp.test(good.product_name)
       );
@@ -110,23 +90,6 @@ export default {
     increaseQuantity(item) {
       item.quantity++;
     },
-
-    removeHandler() {
-      this.basket.forEach((basket) => {
-        if (event.target.dataset.goodId === basket.product_name) {
-          this.removeFromBasket(basket);
-        }
-      });
-    },
-
-    removeFromBasket(item) {
-      for (let idx = 0; idx < this.basket.length; idx++) {
-        if (this.basket[idx].product_name === item.product_name) {
-          if (this.basket[idx].quantity > 1) this.basket[idx].quantity--;
-          else this.basket.splice(idx, 1);
-        }
-      }
-    },
   },
 
   toggleCart() {
@@ -155,7 +118,7 @@ body {
   width: 100%;
 }
 
-.goods_sum {
+/* .goods_sum {
   font-family: sans-serif;
   color: #340144;
   width: 100%;
@@ -165,7 +128,7 @@ body {
   margin-top: 20px;
   margin-bottom: 20px;
   margin-left: 82%;
-}
+} */
 
 header {
   background-color: #340144;
@@ -277,23 +240,6 @@ header {
 
 .close:hover {
   background: #00d9ff;
-}
-
-.basket {
-  display: flex;
-  align-items: center;
-}
-
-.basket_item {
-  width: 25%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.basket-item-desc {
-  text-align: center;
 }
 
 .footer {
