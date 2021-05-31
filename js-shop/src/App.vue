@@ -15,25 +15,7 @@
     </header>
     <main class="container">
       <h2>Каталог</h2>
-      <div class="goods-list">
-        <div
-          v-for="item in filteredGoods"
-          :key="item.id_product"
-          class="goods-item"
-        >
-          <img class="images" alt="some image" />
-          <h3>{{ item.product_name }}</h3>
-          <p>{{ item.price }}</p>
-          <button
-            class="buy-button"
-            :data-good-id="item.id_product"
-            @click="purchaseHandler()"
-          >
-            Купить
-          </button>
-        </div>
-      </div>
-
+      <GoodsList :goods="filteredGoods" :addItemToCart="addItemToCart" />
       <h2>Корзина</h2>
       <div class="basket">
         <div
@@ -65,10 +47,16 @@
 </template>
 
 <script>
+import GoodsList from "./components/GoodsList";
+
 const API_URL =
   "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
 
 export default {
+  components: {
+    GoodsList,
+  },
+
   data: () => ({
     goods: [],
     filteredGoods: [],
@@ -97,14 +85,6 @@ export default {
       this.filteredGoods = this.goods.filter((good) =>
         regexp.test(good.product_name)
       );
-    },
-
-    purchaseHandler() {
-      this.filteredGoods.forEach((good) => {
-        if (parseInt(event.target.dataset.goodId) === good.id_product) {
-          this.addItemToCart(good);
-        }
-      });
     },
 
     pushToCart(item) {
@@ -229,11 +209,6 @@ header {
   margin: 22px 0 22px 22px;
 }
 
-.goods-list {
-  display: flex;
-  justify-content: space-around;
-}
-
 .buy-button {
   background: #340144;
   box-shadow: 5px 20px 50px rgba(141, 0, 193, 0.2);
@@ -256,13 +231,6 @@ header {
   height: 200px;
   margin-bottom: 10px;
   margin-top: 10px;
-}
-
-.goods-item {
-  width: 25%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .modalDialog {
