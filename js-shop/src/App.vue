@@ -8,7 +8,7 @@
       <button
         class="container header cart-button"
         type="button"
-        onclick="window.location.href = '#openModal';"
+        @click="toggleCart()"
       >
         Корзина
       </button>
@@ -26,8 +26,8 @@
           <p>{{ item.price }}</p>
           <button
             class="buy-button"
-            :data-good-id="item.product_name"
-            @click="addItemToCart"
+            :data-good-id="item.id_product"
+            @click="purchaseHandler()"
           >
             Купить
           </button>
@@ -46,11 +46,11 @@
             <h3>{{ item.product_name }}</h3>
             <p>Количество: {{ item.quantity }}</p>
             <p>{{ item.price }}</p>
-            <p>Общая стоимость: {{ getTotalPrice() }}</p>
+            <p>Общая стоимость: {{ item.price * item.quantity }}</p>
             <button
               class="buy-button"
               :data-good-id="item.product_name"
-              @click="removeHandler"
+              @click="removeHandler()"
             >
               Удалить
             </button>
@@ -74,6 +74,7 @@ export default {
     filteredGoods: [],
     basket: [],
     searchLine: "",
+    isVisibleCart: false,
   }),
 
   mounted() {
@@ -98,8 +99,15 @@ export default {
       );
     },
 
+    purchaseHandler() {
+      this.filteredGoods.forEach((good) => {
+        if (parseInt(event.target.dataset.goodId) === good.id_product) {
+          this.addItemToCart(good);
+        }
+      });
+    },
+
     pushToCart(item) {
-      console.log(item);
       this.basket.push({
         product_name: item.product_name,
         price: item.price,
@@ -108,11 +116,6 @@ export default {
     },
 
     addItemToCart(item) {
-      // TODO не могу понять, как найти product_name (почему-то не работает data-good-id, может синтаксис не тот...)
-      console.log(item);
-      console.log(item.product_name);
-      console.log(item.srcElement.dataset.goodId);
-      // if (item.product_name === item.srcElement.dataset.goodId) {
       let inCart = false;
       if (this.basket.length) {
         this.basket.forEach((basket) => {
@@ -128,7 +131,6 @@ export default {
       if (!inCart) {
         this.pushToCart(item);
       }
-      // }
     },
 
     isInCart(unknownItem, cartItem) {
@@ -139,29 +141,26 @@ export default {
       item.quantity++;
     },
 
-    getTotalPrice() {
-      return this.quantity * this.price;
+    removeHandler() {
+      this.basket.forEach((basket) => {
+        if (event.target.dataset.goodId === basket.product_name) {
+          this.removeFromBasket(basket);
+        }
+      });
     },
 
-    removeHandler(event) {
-      if (event.target.tagName === "BUTTON") {
-        this.basket.forEach((basket) => {
-          if (event.target.dataset.goodId === basket.product_name) {
-            this.removeFromCart(basket);
-          }
-        });
-      }
-    },
-
-    removeFromCart(item) {
+    removeFromBasket(item) {
       for (let idx = 0; idx < this.basket.length; idx++) {
         if (this.basket[idx].product_name === item.product_name) {
           if (this.basket[idx].quantity > 1) this.basket[idx].quantity--;
           else this.basket.splice(idx, 1);
         }
       }
-      this.render();
     },
+  },
+
+  toggleCart() {
+    this.isVisibleCart = !this.isVisibleCart;
   },
 
   watch: {
@@ -282,10 +281,10 @@ header {
   pointer-events: none;
 }
 
-.modalDialog:target {
+/* .modalDialog:target {
   display: block;
   pointer-events: auto;
-}
+} */
 
 .modalDialog > div {
   width: 800px;
