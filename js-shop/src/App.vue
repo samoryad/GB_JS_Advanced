@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <Header :filter="filterGoods" />
-    <!-- :toggle="toggleCart" -->
     <main class="container">
       <h2>Каталог</h2>
       <GoodsList :goods="filteredGoods" :addItemToCart="addItemToCart" />

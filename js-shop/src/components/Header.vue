@@ -4,13 +4,7 @@
     <button class="search-button" type="button" @click="filter(searchLine)">
       Искать
     </button>
-    <button
-      class="container header cart-button"
-      type="button"
-      @click="toggle()"
-    >
-      Корзина
-    </button>
+    <button class="container header cart-button" type="button">Корзина</button>
   </header>
 </template>
 
@@ -22,7 +16,6 @@ export default {
 
   props: {
     filter: Function,
-    toggle: Function,
   },
 
   methods: {
