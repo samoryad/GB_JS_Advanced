@@ -1,18 +1,7 @@
 <template>
   <div id="app">
-    <header class="container header">
-      <input v-model="searchLine" type="text" class="goods-search" />
-      <button class="search-button" type="button" @click="filterGoods">
-        Искать
-      </button>
-      <button
-        class="container header cart-button"
-        type="button"
-        @click="toggleCart()"
-      >
-        Корзина
-      </button>
-    </header>
+    <Header :filter="filterGoods" />
+    <!-- :toggle="toggleCart" -->
     <main class="container">
       <h2>Каталог</h2>
       <GoodsList :goods="filteredGoods" :addItemToCart="addItemToCart" />
@@ -48,6 +37,7 @@
 
 <script>
 import GoodsList from "./components/GoodsList";
+import Header from "./components/Header";
 
 const API_URL =
   "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
@@ -55,13 +45,13 @@ const API_URL =
 export default {
   components: {
     GoodsList,
+    Header,
   },
 
   data: () => ({
     goods: [],
     filteredGoods: [],
     basket: [],
-    searchLine: "",
     isVisibleCart: false,
   }),
 
@@ -79,8 +69,8 @@ export default {
         });
     },
 
-    filterGoods() {
-      const regexp = new RegExp(this.searchLine, "i");
+    filterGoods(value) {
+      const regexp = new RegExp(value, "i");
       console.log(this.goods);
       this.filteredGoods = this.goods.filter((good) =>
         regexp.test(good.product_name)
@@ -143,14 +133,14 @@ export default {
     this.isVisibleCart = !this.isVisibleCart;
   },
 
-  watch: {
-    searchLine() {
-      const regexp = new RegExp(this.searchLine, "i");
-      this.filteredGoods = this.goods.filter((good) =>
-        regexp.test(good.product_name)
-      );
-    },
-  },
+  // watch: {
+  //   searchLine() {
+  //     const regexp = new RegExp(this.searchLine, "i");
+  //     this.filteredGoods = this.goods.filter((good) =>
+  //       regexp.test(good.product_name)
+  //     );
+  //   },
+  // },
 };
 </script>
 
@@ -252,7 +242,7 @@ header {
 /* .modalDialog:target {
   display: block;
   pointer-events: auto;
-} */
+}
 
 .modalDialog > div {
   width: 800px;
@@ -264,7 +254,7 @@ header {
   background: -moz-linear-gradient(#fff, #999);
   background: -webkit-linear-gradient(#fff, #999);
   background: -o-linear-gradient(#fff, #999);
-}
+} */
 
 .close {
   background: #606061;
