@@ -4,7 +4,13 @@
     <button class="search-button" type="button" @click="filter(searchLine)">
       Искать
     </button>
-    <button class="container header cart-button" type="button">Корзина</button>
+    <button
+      class="container header cart-button"
+      type="button"
+      @click="$emit('toggle')"
+    >
+      Корзина
+    </button>
   </header>
 </template>
 
