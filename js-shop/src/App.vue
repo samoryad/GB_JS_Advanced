@@ -3,7 +3,8 @@
     <Header @toggle="toggleCart" :filter="filterGoods" />
     <main class="container">
       <h2>Каталог</h2>
-      <GoodsList :goods="filteredGoods" :addItemToCart="addItemToCart" />
+      <GoodsList @add-to-cart="addToCart" :goods="filteredGoods" />
+      <!-- по-старому - :addItemToCart="addItemToCart" -->
       <BasketList :basket="basket" :isVisibleCart="isVisibleCart" />
     </main>
     <footer class="container footer">
@@ -17,8 +18,7 @@ import GoodsList from "./components/GoodsList";
 import Header from "./components/Header";
 import BasketList from "./components/BasketList";
 
-const API_URL =
-  "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
+const API_URL = "http://localhost:3000";
 
 export default {
   components: {
@@ -35,17 +35,43 @@ export default {
   }),
 
   mounted() {
-    this.makeGETRequest(`${API_URL}/catalogData.json`);
+    this.getGoods();
+    this.getCart();
   },
 
   methods: {
+    addToCart(item) {
+      this.makePOSTRequest(`${API_URL}/addToCart`, item).then(() =>
+        this.getCart()
+      );
+    },
+
+    makePOSTRequest(url, data) {
+      return fetch(url, {
+        method: "POST",
+        headers: {
+          // добавили хэдер
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }).then((data) => data.json());
+    },
+
     makeGETRequest(url) {
-      fetch(url)
-        .then((data) => data.json())
-        .then((data) => {
-          this.goods = data;
-          this.filteredGoods = data;
-        });
+      return fetch(url).then((data) => data.json());
+    },
+
+    getGoods() {
+      this.makeGETRequest(`${API_URL}/catalogData`).then((data) => {
+        this.goods = data;
+        this.filteredGoods = data;
+      });
+    },
+
+    getCart() {
+      this.makeGETRequest(`${API_URL}/cartData`).then((data) => {
+        this.basket = data;
+      });
     },
 
     filterGoods(value) {
