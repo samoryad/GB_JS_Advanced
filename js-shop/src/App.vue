@@ -1,62 +1,10 @@
 <template>
   <div id="app">
-    <header class="container header">
-      <input v-model="searchLine" type="text" class="goods-search" />
-      <button class="search-button" type="button" @click="filterGoods">
-        Искать
-      </button>
-      <button
-        class="container header cart-button"
-        type="button"
-        @click="toggleCart()"
-      >
-        Корзина
-      </button>
-    </header>
+    <Header @toggle="toggleCart" :filter="filterGoods" />
     <main class="container">
       <h2>Каталог</h2>
-      <div class="goods-list">
-        <div
-          v-for="item in filteredGoods"
-          :key="item.id_product"
-          class="goods-item"
-        >
-          <img class="images" alt="some image" />
-          <h3>{{ item.product_name }}</h3>
-          <p>{{ item.price }}</p>
-          <button
-            class="buy-button"
-            :data-good-id="item.id_product"
-            @click="purchaseHandler()"
-          >
-            Купить
-          </button>
-        </div>
-      </div>
-
-      <h2>Корзина</h2>
-      <div class="basket">
-        <div
-          class="container basket_item"
-          v-for="item in basket"
-          :key="item.id_product"
-        >
-          <img src="" alt="Some img" />
-          <div class="basket-item-desc">
-            <h3>{{ item.product_name }}</h3>
-            <p>Количество: {{ item.quantity }}</p>
-            <p>{{ item.price }}</p>
-            <p>Общая стоимость: {{ item.price * item.quantity }}</p>
-            <button
-              class="buy-button"
-              :data-good-id="item.product_name"
-              @click="removeHandler()"
-            >
-              Удалить
-            </button>
-          </div>
-        </div>
-      </div>
+      <GoodsList :goods="filteredGoods" :addItemToCart="addItemToCart" />
+      <BasketList :basket="basket" :isVisibleCart="isVisibleCart" />
     </main>
     <footer class="container footer">
       <span class="span-footer">Интернет-магазин</span>
@@ -65,15 +13,24 @@
 </template>
 
 <script>
+import GoodsList from "./components/GoodsList";
+import Header from "./components/Header";
+import BasketList from "./components/BasketList";
+
 const API_URL =
   "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
 
 export default {
+  components: {
+    GoodsList,
+    Header,
+    BasketList,
+  },
+
   data: () => ({
     goods: [],
     filteredGoods: [],
     basket: [],
-    searchLine: "",
     isVisibleCart: false,
   }),
 
@@ -91,20 +48,11 @@ export default {
         });
     },
 
-    filterGoods() {
-      const regexp = new RegExp(this.searchLine, "i");
-      console.log(this.goods);
+    filterGoods(value) {
+      const regexp = new RegExp(value, "i");
       this.filteredGoods = this.goods.filter((good) =>
         regexp.test(good.product_name)
       );
-    },
-
-    purchaseHandler() {
-      this.filteredGoods.forEach((good) => {
-        if (parseInt(event.target.dataset.goodId) === good.id_product) {
-          this.addItemToCart(good);
-        }
-      });
     },
 
     pushToCart(item) {
@@ -141,34 +89,8 @@ export default {
       item.quantity++;
     },
 
-    removeHandler() {
-      this.basket.forEach((basket) => {
-        if (event.target.dataset.goodId === basket.product_name) {
-          this.removeFromBasket(basket);
-        }
-      });
-    },
-
-    removeFromBasket(item) {
-      for (let idx = 0; idx < this.basket.length; idx++) {
-        if (this.basket[idx].product_name === item.product_name) {
-          if (this.basket[idx].quantity > 1) this.basket[idx].quantity--;
-          else this.basket.splice(idx, 1);
-        }
-      }
-    },
-  },
-
-  toggleCart() {
-    this.isVisibleCart = !this.isVisibleCart;
-  },
-
-  watch: {
-    searchLine() {
-      const regexp = new RegExp(this.searchLine, "i");
-      this.filteredGoods = this.goods.filter((good) =>
-        regexp.test(good.product_name)
-      );
+    toggleCart() {
+      this.isVisibleCart = !this.isVisibleCart;
     },
   },
 };
@@ -183,18 +105,6 @@ export default {
 body {
   font-family: sans-serif;
   width: 100%;
-}
-
-.goods_sum {
-  font-family: sans-serif;
-  color: #340144;
-  width: 100%;
-  font-weight: 500;
-  font-size: 16px;
-  width: 80%;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  margin-left: 82%;
 }
 
 header {
@@ -229,11 +139,6 @@ header {
   margin: 22px 0 22px 22px;
 }
 
-.goods-list {
-  display: flex;
-  justify-content: space-around;
-}
-
 .buy-button {
   background: #340144;
   box-shadow: 5px 20px 50px rgba(141, 0, 193, 0.2);
@@ -256,86 +161,6 @@ header {
   height: 200px;
   margin-bottom: 10px;
   margin-top: 10px;
-}
-
-.goods-item {
-  width: 25%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.modalDialog {
-  position: fixed;
-  font-family: Arial, Helvetica, sans-serif;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 99999;
-  -webkit-transition: opacity 400ms ease-in;
-  -moz-transition: opacity 400ms ease-in;
-  transition: opacity 400ms ease-in;
-  display: none;
-  pointer-events: none;
-}
-
-/* .modalDialog:target {
-  display: block;
-  pointer-events: auto;
-} */
-
-.modalDialog > div {
-  width: 800px;
-  position: relative;
-  margin: 10% auto;
-  padding: 5px 20px 13px 20px;
-  border-radius: 10px;
-  background: #fff;
-  background: -moz-linear-gradient(#fff, #999);
-  background: -webkit-linear-gradient(#fff, #999);
-  background: -o-linear-gradient(#fff, #999);
-}
-
-.close {
-  background: #606061;
-  color: #ffffff;
-  line-height: 25px;
-  position: absolute;
-  right: -12px;
-  text-align: center;
-  top: -10px;
-  width: 24px;
-  text-decoration: none;
-  font-weight: bold;
-  -webkit-border-radius: 12px;
-  -moz-border-radius: 12px;
-  border-radius: 12px;
-  -moz-box-shadow: 1px 1px 3px #000;
-  -webkit-box-shadow: 1px 1px 3px #000;
-  box-shadow: 1px 1px 3px #000;
-}
-
-.close:hover {
-  background: #00d9ff;
-}
-
-.basket {
-  display: flex;
-  align-items: center;
-}
-
-.basket_item {
-  width: 25%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.basket-item-desc {
-  text-align: center;
 }
 
 .footer {
