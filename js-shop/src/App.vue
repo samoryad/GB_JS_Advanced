@@ -5,7 +5,11 @@
       <h2>Каталог</h2>
       <GoodsList @add-to-cart="addToCart" :goods="filteredGoods" />
       <!-- по-старому - :addItemToCart="addItemToCart" -->
-      <BasketList :basket="basket" :isVisibleCart="isVisibleCart" />
+      <BasketList
+        @delete-from-cart="deleteFromCart"
+        :basket="basket"
+        :isVisibleCart="isVisibleCart"
+      />
     </main>
     <footer class="container footer">
       <span class="span-footer">Интернет-магазин</span>
@@ -41,7 +45,15 @@ export default {
 
   methods: {
     addToCart(item) {
+      console.log(item);
       this.makePOSTRequest(`${API_URL}/addToCart`, item).then(() =>
+        this.getCart()
+      );
+    },
+
+    deleteFromCart(item) {
+      console.log(item);
+      this.makePOSTRequest(`${API_URL}/deleteFromCart`, item).then(() =>
         this.getCart()
       );
     },

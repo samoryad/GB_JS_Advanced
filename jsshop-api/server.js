@@ -10,6 +10,7 @@ app.use(bodyParser.json())
 
 app.post('/addToCart', (req, res) => {
     fs.readFile('./database/cart.json', 'utf8', (err, data) => {
+        // console.log(data)
         if (err) {
             res.send('{ "result": 0 }')
         } else {
@@ -28,6 +29,29 @@ app.post('/addToCart', (req, res) => {
         }
     })
 })
+
+app.post('/deleteFromCart', (req, res) => {
+    fs.readFile('./database/cart.json', 'utf8', (err, data) => {
+        if (err) {
+            res.send('{ "result": 0 }')
+        } else {
+            const cart = JSON.parse(data);
+            // console.log(cart)
+            const item = req.body;
+            // console.log(item)
+            const updatedCart = cart.filter(cartItem => JSON.stringify(cartItem) != JSON.stringify(item));
+
+            fs.writeFile('./database/cart.json', JSON.stringify(updatedCart), (err) => {
+                if (err) {
+                    res.send('{"result": 0}');
+                } else {
+                    res.send('{"result": 1}');
+                }
+            })
+        }
+    })
+})
+
 
 app.get('/catalogData', (req, res) => {
     fs.readFile('./database/goods.json', 'utf8', (err, data) => {
