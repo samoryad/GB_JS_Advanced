@@ -10,15 +10,14 @@
       <img src="" alt="Some img" />
       <div class="basket-item-desc">
         <h3>{{ item.product_name }}</h3>
-        <!-- <p>Количество: {{ item.quantity }}</p> -->
+        <p>Количество: {{ item.quantity }}</p>
         <p>{{ item.price }}</p>
-        <!-- <p>Общая стоимость: {{ item.price * item.quantity }}</p> -->
+        <p>Общая стоимость: {{ item.price * item.quantity }}</p>
         <button
           class="buy-button"
           :data-good-id="item.product_name"
-          @click="onClick(item)"
+          @click="removeFromCart(item)"
         >
-          <!-- по-старому @click="removeHandler(basket)" -->
           Удалить
         </button>
       </div>
@@ -37,28 +36,8 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-
-  methods: {
-    onClick(item) {
-      this.$emit("delete-from-cart", item);
-    },
-
-    removeHandler(basket) {
-      basket.forEach((basketItem) => {
-        if (event.target.dataset.goodId === basketItem.product_name) {
-          this.removeFromBasket(basket, basketItem);
-        }
-      });
-    },
-
-    removeFromBasket(basket, item) {
-      for (let idx = 0; idx < basket.length; idx++) {
-        if (basket[idx].product_name === item.product_name) {
-          if (basket[idx].quantity > 1) basket[idx].quantity--;
-          else basket.splice(idx, 1);
-        }
-      }
+    removeFromCart: {
+      type: Function,
     },
   },
 };

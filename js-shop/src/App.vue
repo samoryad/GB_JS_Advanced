@@ -3,12 +3,11 @@
     <Header @toggle="toggleCart" :filter="filterGoods" />
     <main class="container">
       <h2>Каталог</h2>
-      <GoodsList @add-to-cart="addToCart" :goods="filteredGoods" />
-      <!-- по-старому - :addItemToCart="addItemToCart" -->
+      <GoodsList :addItemToCart="addItemToCart" :goods="filteredGoods" />
       <BasketList
-        @delete-from-cart="deleteFromCart"
         :basket="basket"
         :isVisibleCart="isVisibleCart"
+        :removeFromCart="removeFromCart"
       />
     </main>
     <footer class="container footer">
@@ -44,20 +43,6 @@ export default {
   },
 
   methods: {
-    addToCart(item) {
-      console.log(item);
-      this.makePOSTRequest(`${API_URL}/addToCart`, item).then(() =>
-        this.getCart()
-      );
-    },
-
-    deleteFromCart(item) {
-      console.log(item);
-      this.makePOSTRequest(`${API_URL}/deleteFromCart`, item).then(() =>
-        this.getCart()
-      );
-    },
-
     makePOSTRequest(url, data) {
       return fetch(url, {
         method: "POST",
@@ -93,38 +78,16 @@ export default {
       );
     },
 
-    pushToCart(item) {
-      this.basket.push({
-        product_name: item.product_name,
-        price: item.price,
-        quantity: 1,
+    addItemToCart(item) {
+      this.makePOSTRequest(`${API_URL}/addToCart`, item).then(() => {
+        this.getCart();
       });
     },
 
-    addItemToCart(item) {
-      let inCart = false;
-      if (this.basket.length) {
-        this.basket.forEach((basket) => {
-          if (this.isInCart(item, basket)) {
-            this.increaseQuantity(basket);
-            inCart = true;
-          }
-        });
-      } else {
-        this.pushToCart(item);
-        return;
-      }
-      if (!inCart) {
-        this.pushToCart(item);
-      }
-    },
-
-    isInCart(unknownItem, cartItem) {
-      return unknownItem.product_name === cartItem.product_name;
-    },
-
-    increaseQuantity(item) {
-      item.quantity++;
+    removeFromCart(item) {
+      this.makePOSTRequest(`${API_URL}/deleteFromCart`, item).then(() => {
+        this.getCart();
+      });
     },
 
     toggleCart() {

@@ -7,10 +7,9 @@
       <button
         class="buy-button"
         :data-good-id="item.id_product"
-        @click="onClick(item)"
+        @click="addItemToCart(item)"
       >
         Купить
-        <!--по-старому вместо onClick это - @click="purchaseHandler(addItemToCart)" -->
       </button>
     </div>
   </div>
@@ -25,21 +24,6 @@ export default {
     },
     addItemToCart: {
       type: Function,
-    },
-  },
-
-  methods: {
-    // старый метод (без сервера и API)
-    // purchaseHandler(orderFunction) {
-    //   this.goods.forEach((good) => {
-    //     if (parseInt(event.target.dataset.goodId) === good.id_product) {
-    //       orderFunction(good);
-    //     }
-    //   });
-    // },
-
-    onClick(item) {
-      this.$emit("add-to-cart", item);
     },
   },
 };
