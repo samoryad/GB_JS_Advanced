@@ -7,7 +7,7 @@
       <button
         class="buy-button"
         :data-good-id="item.id_product"
-        @click="purchaseHandler(addItemToCart)"
+        @click="addItemToCart(item)"
       >
         Купить
       </button>
@@ -24,16 +24,6 @@ export default {
     },
     addItemToCart: {
       type: Function,
-    },
-  },
-
-  methods: {
-    purchaseHandler(orderFunction) {
-      this.goods.forEach((good) => {
-        if (parseInt(event.target.dataset.goodId) === good.id_product) {
-          orderFunction(good);
-        }
-      });
     },
   },
 };

@@ -16,7 +16,7 @@
         <button
           class="buy-button"
           :data-good-id="item.product_name"
-          @click="removeHandler(basket)"
+          @click="removeFromCart(item)"
         >
           Удалить
         </button>
@@ -36,24 +36,8 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-
-  methods: {
-    removeHandler(basket) {
-      basket.forEach((basketItem) => {
-        if (event.target.dataset.goodId === basketItem.product_name) {
-          this.removeFromBasket(basket, basketItem);
-        }
-      });
-    },
-
-    removeFromBasket(basket, item) {
-      for (let idx = 0; idx < basket.length; idx++) {
-        if (basket[idx].product_name === item.product_name) {
-          if (basket[idx].quantity > 1) basket[idx].quantity--;
-          else basket.splice(idx, 1);
-        }
-      }
+    removeFromCart: {
+      type: Function,
     },
   },
 };

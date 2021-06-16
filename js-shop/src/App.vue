@@ -3,8 +3,12 @@
     <Header @toggle="toggleCart" :filter="filterGoods" />
     <main class="container">
       <h2>Каталог</h2>
-      <GoodsList :goods="filteredGoods" :addItemToCart="addItemToCart" />
-      <BasketList :basket="basket" :isVisibleCart="isVisibleCart" />
+      <GoodsList :addItemToCart="addItemToCart" :goods="filteredGoods" />
+      <BasketList
+        :basket="basket"
+        :isVisibleCart="isVisibleCart"
+        :removeFromCart="removeFromCart"
+      />
     </main>
     <footer class="container footer">
       <span class="span-footer">Интернет-магазин</span>
@@ -17,8 +21,7 @@ import GoodsList from "./components/GoodsList";
 import Header from "./components/Header";
 import BasketList from "./components/BasketList";
 
-const API_URL =
-  "https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses";
+const API_URL = "http://localhost:3000";
 
 export default {
   components: {
@@ -35,17 +38,37 @@ export default {
   }),
 
   mounted() {
-    this.makeGETRequest(`${API_URL}/catalogData.json`);
+    this.getGoods();
+    this.getCart();
   },
 
   methods: {
+    makePOSTRequest(url, data) {
+      return fetch(url, {
+        method: "POST",
+        headers: {
+          // добавили хэдер
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }).then((data) => data.json());
+    },
+
     makeGETRequest(url) {
-      fetch(url)
-        .then((data) => data.json())
-        .then((data) => {
-          this.goods = data;
-          this.filteredGoods = data;
-        });
+      return fetch(url).then((data) => data.json());
+    },
+
+    getGoods() {
+      this.makeGETRequest(`${API_URL}/catalogData`).then((data) => {
+        this.goods = data;
+        this.filteredGoods = data;
+      });
+    },
+
+    getCart() {
+      this.makeGETRequest(`${API_URL}/cartData`).then((data) => {
+        this.basket = data;
+      });
     },
 
     filterGoods(value) {
@@ -55,38 +78,16 @@ export default {
       );
     },
 
-    pushToCart(item) {
-      this.basket.push({
-        product_name: item.product_name,
-        price: item.price,
-        quantity: 1,
+    addItemToCart(item) {
+      this.makePOSTRequest(`${API_URL}/addToCart`, item).then(() => {
+        this.getCart();
       });
     },
 
-    addItemToCart(item) {
-      let inCart = false;
-      if (this.basket.length) {
-        this.basket.forEach((basket) => {
-          if (this.isInCart(item, basket)) {
-            this.increaseQuantity(basket);
-            inCart = true;
-          }
-        });
-      } else {
-        this.pushToCart(item);
-        return;
-      }
-      if (!inCart) {
-        this.pushToCart(item);
-      }
-    },
-
-    isInCart(unknownItem, cartItem) {
-      return unknownItem.product_name === cartItem.product_name;
-    },
-
-    increaseQuantity(item) {
-      item.quantity++;
+    removeFromCart(item) {
+      this.makePOSTRequest(`${API_URL}/deleteFromCart`, item).then(() => {
+        this.getCart();
+      });
     },
 
     toggleCart() {
