@@ -35,13 +35,13 @@ app.post('/deleteFromCart', (req, res) => {
         if (err) {
             res.send('{ "result": 0 }')
         } else {
-            const cart = JSON.parse(data);
+            let cart = JSON.parse(data);
             // console.log(cart)
             const item = req.body;
             // console.log(item)
-            const updatedCart = cart.filter(cartItem => JSON.stringify(cartItem) != JSON.stringify(item));
+            cart = cart.filter(cartItem => cartItem.id_product !== item.id_product);
 
-            fs.writeFile('./database/cart.json', JSON.stringify(updatedCart), (err) => {
+            fs.writeFile('./database/cart.json', JSON.stringify(cart), (err) => {
                 if (err) {
                     res.send('{"result": 0}');
                 } else {
